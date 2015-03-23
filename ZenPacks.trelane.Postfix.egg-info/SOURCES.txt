@@ -37,7 +37,7 @@ ZenPacks/trelane/Postfix/daemons/zenexample
 ZenPacks/trelane/Postfix/datasources/ExampleDataSource.py.example
 ZenPacks/trelane/Postfix/datasources/__init__.py
 ZenPacks/trelane/Postfix/lib/__init__.py
-ZenPacks/trelane/Postfix/libexec/placeholder.txt
+ZenPacks/trelane/Postfix/libexec/postfix.sh
 ZenPacks/trelane/Postfix/migrate/ExampleMigration.py
 ZenPacks/trelane/Postfix/migrate/ExampleMigration.pyc
 ZenPacks/trelane/Postfix/migrate/__init__.py
