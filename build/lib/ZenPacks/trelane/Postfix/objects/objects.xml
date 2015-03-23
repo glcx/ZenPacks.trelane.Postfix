@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <objects>
-<!-- ('', 'zport', 'dmd', 'Devices', 'Server', 'SSH', 'Linux', 'devices', 'master.trelane.net', 'Postfix') -->
-<object id='/zport/dmd/Devices/Server/SSH/Linux/devices/master.trelane.net/Postfix' module='Products.ZenModel.RRDTemplate' class='RRDTemplate'>
+<!-- ('', 'zport', 'dmd', 'Devices', 'rrdTemplates', 'Postfix') -->
+<object id='/zport/dmd/Devices/rrdTemplates/Postfix' module='Products.ZenModel.RRDTemplate' class='RRDTemplate'>
 <property type="string" id="targetPythonClass" mode="w" >
 Products.ZenModel.Device
 </property>
@@ -20,7 +20,7 @@ True
 3
 </property>
 <property type="string" id="commandTemplate" mode="w" >
-/home/zenoss/postfix.sh ${dev/manageIp}
+$ZENHOME/ZenPacks/ZenPacks.trelane.Postfix/ZenPacks/trelane/Postfix/libexec/postfix.sh ${dev/manageIp}
 </property>
 <property type="int" id="cycletime" mode="w" >
 300
