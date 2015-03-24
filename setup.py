@@ -3,7 +3,7 @@
 # or saved.  Do not modify them directly here.
 # NB: PACKAGES is deprecated
 NAME = "ZenPacks.trelane.Postfix"
-VERSION = "1.0.3"
+VERSION = "1.0.4"
 AUTHOR = "Andrew D Kirch"
 LICENSE = "GPLv2"
 NAMESPACE_PACKAGES = ['ZenPacks', 'ZenPacks.trelane']

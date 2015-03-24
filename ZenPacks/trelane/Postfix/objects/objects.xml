@@ -20,7 +20,7 @@ True
 3
 </property>
 <property type="string" id="commandTemplate" mode="w" >
-${here/ZenPackManager/packs/ZenPacks.trelane.Postfix/path}/libexec/postfix.sh ${here/manageIp}
+${here/ZenPackManager/packs/ZenPacks.trelane.Postfix/path}/libexec/postfix.sh ${here/manageIp} ${here/zCommandUsername}
 </property>
 <property type="int" id="cycletime" mode="w" >
 300
