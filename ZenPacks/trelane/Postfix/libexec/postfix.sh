@@ -10,6 +10,21 @@
 #   delivered (to a local account)
 #   spam (rejected as spam)
 #
+
+try() {
+        "$@"
+        if [ $? -ne 0 ]; then
+                echo "Command failure: $@"
+                exit 1
+        fi
+}
+
+die() {
+        echo $*
+        exit 1
+}
+
+
 # note that the strings to parse for may vary by system, so they are broken out for easy editing below
 # 
 # to use this script the zenoss user will need to be able to run 'postqueue' and read postfix's
@@ -24,11 +39,16 @@ POSTFIXLOG_PATH=/var/log/maillog
 #SPAM_REGEXP=""
 
 #gets the number of mail messages in the queue
-QUEUE=$(ssh "$1" $POSTQUEUE_PATH -p | grep Requests | awk '{print $5}')
+QUEUE=$(try ssh "$1" $POSTQUEUE_PATH -p | grep Requests | awk '{print $5}')
+
+if [ "$QUEUE" = "" ]; then
+  die
+fi
+   
 
 #gets stats for the last 5 minutes 
 DATE=$(date --date="-5 minutes" '+%b %d %R')
-ssh "$1" grep -A 999999 \""$DATE"\" $POSTFIXLOG_PATH > ~/postfix.log
+try ssh "$1" grep -A 999999 \""$DATE"\" $POSTFIXLOG_PATH > ~/postfix.log
 
 SENT=$(grep postfix /home/zenoss/postfix.log | grep status=sent | grep -v -E 'relay=mail(pre|post)filter' | \
 grep -v 'relay=127.0.0.1' | grep -v discarded | grep -Ec '(OK|Ok)')
