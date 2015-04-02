@@ -33,7 +33,7 @@ die() {
 #OS Detection
 #We try to detect the OS, but just in case, the paths are broken out below for easy editing
 #please send me more log file location/OS pairs and I'll add them -mgmt
-if [ $(ssh "$2"@"$1" test -f /etc/redhat_release | echo $?) -eq 0 ]; then
+if [ $(try ssh "$2"@"$1" test -f /etc/redhat_release | echo $?) -eq 0 ]; then
 	#we're on redhat
 	POSTFIX_SYSLOG_PATH=/var/log/maillog
 else
@@ -59,13 +59,12 @@ POSTFIX_SNIPPET=/tmp/"1".postfix.log
 QUEUE=$(try ssh "$2"@"$1" $POSTQUEUE_PATH -p | grep Requests | awk '{print $5}')
 
 if [ "$QUEUE" = "" ]; then
-  die
+  die || no queue
 fi
    
 
-#gets stats for the last 5 minutes 
-DATE=$(date --date="-5 minutes" '+%b %d %R')
-try ssh "$2"@"$1" grep -A 999999 \""$DATE"\" $POSTFIX_SYSLOG_PATH > "$POSTFIX_SNIPPET"
+DATE=$(date --date="-5 minutes" '+%b %e %R')
+try ssh -v "$2"@"$1" grep -A 999999 "'$DATE'" $POSTFIX_SYSLOG_PATH > "$POSTFIX_SNIPPET"
 
 SENT=$(grep postfix "$POSTFIX_SNIPPET" | grep status=sent | grep -v -E 'relay=mail(pre|post)filter' | \
 grep -v 'relay=127.0.0.1' | grep -v discarded | grep -Ec '(OK|Ok)')
