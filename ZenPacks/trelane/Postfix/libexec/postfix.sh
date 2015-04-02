@@ -64,7 +64,7 @@ fi
    
 
 DATE=$(date --date="-5 minutes" '+%b %e %R')
-try ssh -v "$2"@"$1" grep -A 999999 "'$DATE'" $POSTFIX_SYSLOG_PATH > "$POSTFIX_SNIPPET"
+try ssh "$2"@"$1" grep -A 999999 "'$DATE'" $POSTFIX_SYSLOG_PATH > "$POSTFIX_SNIPPET"
 
 SENT=$(grep postfix "$POSTFIX_SNIPPET" | grep status=sent | grep -v -E 'relay=mail(pre|post)filter' | \
 grep -v 'relay=127.0.0.1' | grep -v discarded | grep -Ec '(OK|Ok)')
