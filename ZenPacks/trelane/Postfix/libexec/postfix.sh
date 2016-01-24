@@ -33,7 +33,11 @@ die() {
 #OS Detection
 #We try to detect the OS, but just in case, the paths are broken out below for easy editing
 #please send me more log file location/OS pairs and I'll add them -mgmt
-if [ $(try ssh "$2"@"$1" test -f /etc/redhat_release | echo $?) -eq 0 ]; then
+#
+# 20151103 : echo $? did not work well under certains conditions.
+# 20151103 : -oStrictHostKeyChecking to automatically add the host key. It will raise an error the first time the script runs.
+# -oStrictHostKeyChecking to automatically add the host key. It will raise an alert the first time the script runs.
+if [ $(try ssh -oStrictHostKeyChecking=no "$2"@"$1" 'test -f /etc/redhat-release ; echo $?') -eq 0 ]; then
 	#we're on redhat
 	POSTFIX_SYSLOG_PATH=/var/log/maillog
 else
@@ -51,20 +55,26 @@ POSTFIX_SNIPPET=/tmp/"1".postfix.log
 #RECEIVED_REGEXP=""
 #SPAM_REGEXP=""
 
+#gets the number of mail messages in the queue by reading the last line.
+QUEUE=$(try ssh "$2"@"$1" $POSTQUEUE_PATH -p | tail -1)
+if [ "$QUEUE" = "Mail queue is empty" ]
+then
+	QUEUE=0
+else
+	QUEUE=$(echo "$QUEUE" | awk '{print $5}')
+fi 
 
-
-
-
-#gets the number of mail messages in the queue
-QUEUE=$(try ssh "$2"@"$1" $POSTQUEUE_PATH -p | grep Requests | awk '{print $5}')
-
+#error handling
 if [ "$QUEUE" = "" ]; then
   die || no queue
 fi
    
 
-DATE=$(date --date="-5 minutes" '+%b %e %R')
-try ssh "$2"@"$1" grep -A 999999 "'$DATE'" $POSTFIX_SYSLOG_PATH > "$POSTFIX_SNIPPET"
+#20151103 : syslog date is in english. just force the lang to be sure of the date format
+DATE=$(LC_TIME=en_IE.UTF-8 date --date="-5 minutes" '+%b %e %R')
+
+#20151103 : awk is able to manage dates efficiently
+try ssh $2@$1 "awk -v date=\"$DATE\" '\$0 >= date' $POSTFIX_SYSLOG_PATH" > "$POSTFIX_SNIPPET"
 
 SENT=$(grep postfix "$POSTFIX_SNIPPET" | grep status=sent | grep -v -E 'relay=mail(pre|post)filter' | \
 grep -v 'relay=127.0.0.1' | grep -v discarded | grep -Ec '(OK|Ok)')
@@ -74,6 +84,5 @@ SPAM=$(grep discarded "$POSTFIX_SNIPPET" | grep -c SPAM)
 rm "$POSTFIX_SNIPPET"
 
 echo "OK|queue=$QUEUE sent=$SENT received=$RECEIVED spam=$SPAM"
-
-
- 
+# If we are here, everything went fine. Let's exit.
+exit 0
