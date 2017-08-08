@@ -66,7 +66,7 @@ fi
 
 #error handling
 if [ "$QUEUE" = "" ]; then
-  die || no queue
+  QUEUE=0
 fi
    
 
